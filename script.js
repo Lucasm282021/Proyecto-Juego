@@ -158,6 +158,10 @@ pauseRestartBtn.addEventListener("click", () => {
     score = 0;
     level = 1;
     enemies.length = 0;
+    // Corrección: Resetear multiplicador de velocidad y limpiar intervalo de dificultad
+    enemySpeedMultiplier = 1;
+    if (difficultyInterval) clearInterval(difficultyInterval);
+    
     bullets.length = 0;
     enemyBullets.length = 0;
     explosions.length = 0;
@@ -166,6 +170,14 @@ pauseRestartBtn.addEventListener("click", () => {
     player.y = canvas.height - 100 * gameScale;
     
     startEnemySpawners();
+    
+    // Reiniciar el incremento de dificultad
+    difficultyInterval = setInterval(() => {
+        if (gameRunning && !isPaused) {
+            increaseDifficulty();
+        }
+    }, 15000);
+
     if (musicOn) {
         bgMusic.currentTime = 0;
         bgMusic.play();
@@ -189,6 +201,26 @@ canvas.addEventListener("mousemove", e => {
     if (player.x < 0) player.x = 0;
     if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
 });
+
+// Control Táctil (Móvil)
+canvas.addEventListener("touchmove", e => {
+    if (!gameRunning || isPaused || countdownText !== "") return;
+    e.preventDefault(); // Evitar scroll
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const scaleX = canvas.width / rect.width;
+    const touchX = (touch.clientX - rect.left) * scaleX;
+
+    player.x = touchX - player.w / 2;
+
+    // Mantener dentro del canvas
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+}, { passive: false });
+
+canvas.addEventListener("touchstart", e => {
+    if (gameRunning && !isPaused && countdownText === "") bullets.push({ x: player.x + player.w / 2 - 2 * gameScale, y: player.y, w: 4 * gameScale, h: 15 * gameScale });
+}, { passive: false });
 
 // Disparo con clic del mouse
 canvas.addEventListener("mousedown", e => {
@@ -288,6 +320,26 @@ function startEnemySpawners() {
     }, shooterSpawnRate);
 }
 
+function handleGameOver() {
+    gameRunning = false;
+    playerDestroyed = true;
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    if (soundOn) {
+        explosionSound.currentTime = 0;
+        explosionSound.play();
+        explosionSound.addEventListener("ended", () => {
+            gameOverSound.currentTime = 0;
+            gameOverSound.play();
+            gameOverSound.addEventListener("ended", () => {
+                showGameOver();
+            }, { once: true });
+        }, { once: true });
+    } else {
+        setTimeout(() => showGameOver(), 500);
+    }
+}
+
 function update() {
     if (!gameRunning || isPaused) return;
 
@@ -316,25 +368,7 @@ function update() {
         enemyBullets[i].y += enemyBullets[i].speed;
         
         if (rectIntersect(playerHitbox, enemyBullets[i])) {
-            gameRunning = false;
-            playerDestroyed = true;
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
-            if (soundOn) {
-                explosionSound.currentTime = 0;
-                explosionSound.play();
-                explosionSound.addEventListener("ended", () => {
-                    gameOverSound.currentTime = 0;
-                    gameOverSound.play();
-                    gameOverSound.addEventListener("ended", () => {
-                        showGameOver();
-                    }, { once: true });
-                }, { once: true });
-            } else {
-                setTimeout(() => {
-                    showGameOver();
-                }, 500);
-            }
+            handleGameOver();
         }
         if (enemyBullets[i].y > canvas.height) enemyBullets.splice(i, 1);
     }
@@ -346,25 +380,7 @@ function update() {
         
         // Colisión con jugador
         if (rectIntersect(playerHitbox, en)) {
-            gameRunning = false;
-            playerDestroyed = true;
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
-            if (soundOn) {
-                explosionSound.currentTime = 0;
-                explosionSound.play();
-                explosionSound.addEventListener("ended", () => {
-                    gameOverSound.currentTime = 0;
-                    gameOverSound.play();
-                    gameOverSound.addEventListener("ended", () => {
-                        showGameOver();
-                    }, { once: true });
-                }, { once: true });
-            } else {
-                setTimeout(() => {
-                    showGameOver();
-                }, 500);
-            }
+            handleGameOver();
         }
 
         // Lógica de disparo para enemigo tipo 'shooter'
@@ -487,6 +503,14 @@ optionsBack.addEventListener("click", (e) => {
     mainMenu.style.display = "block";
 });
 
+function increaseDifficulty() {
+    let increase = 0.05;
+    if (currentDifficulty === 'easy') increase = 0.02;
+    if (currentDifficulty === 'hard') increase = 0.08;
+    enemySpeedMultiplier += increase;
+    level++;
+}
+
 function setDifficulty(level) {
     // Resetear estilos
     diffEasy.style.color = "white";
@@ -593,11 +617,7 @@ function launchGame() {
                 if (difficultyInterval) clearInterval(difficultyInterval);
                 difficultyInterval = setInterval(() => {
                     if (gameRunning && !isPaused) {
-                        let increase = 0.05;
-                        if (currentDifficulty === 'easy') increase = 0.02;
-                        if (currentDifficulty === 'hard') increase = 0.08;
-                        enemySpeedMultiplier += increase;
-                        level++;
+                        increaseDifficulty();
                     }
                 }, 15000);
             }

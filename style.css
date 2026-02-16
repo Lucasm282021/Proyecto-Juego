@@ -50,3 +50,68 @@ nav a:hover, #ship-selection-back:hover {
     box-shadow: 0 0 20px #ff4d4d;
     background: rgba(255, 77, 77, 0.3) !important;
 }
+
+/* --- Clases de UI y Menús (Movido desde HTML) --- */
+
+/* Contenedores de pantalla completa */
+.screen-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 20;
+    display: none; /* Controlado por JS */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+/* Cajas de menú flotantes (Pausa, Opciones, Game Over) */
+.menu-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 3vmin;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 40vmin;
+    color: white;
+    z-index: 20;
+}
+
+/* Listas de menú */
+.menu-list {
+    list-style: none;
+    padding: 0;
+}
+.menu-list li {
+    margin: 10px;
+}
+
+/* Enlaces de menú */
+.menu-link {
+    color: white;
+    text-decoration: none;
+    font-size: 3.5vmin;
+    display: inline-block;
+}
+
+/* Botones Generales */
+.btn {
+    padding: 10px 20px;
+    font-size: 3.5vmin;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+}
+.btn-primary { background: #00d4ff; color: black; }
+.btn-danger { background: #ff4d4d; color: white; }
+.btn-success { background: #28a745; color: white; }
+.btn-full { width: 100%; }
+
+/* Títulos */
+.title-lg { font-size: 6vmin; margin-top: 0; }
+.title-md { font-size: 4vmin; margin-top: 0; }

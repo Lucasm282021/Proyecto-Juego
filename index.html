@@ -12,54 +12,54 @@
             <canvas id="gameCanvas"></canvas>
             <div id="main-menu" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;">
                 <button id="menu-music-toggle" style="position: absolute; bottom: 20px; right: 20px; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">🔊</button>
-                <nav style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 3vmin; border-radius: 10px; text-align: center;">
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin: 10px;"><a href="#" id="start-btn" style="color: white; text-decoration: none; font-size: 3.5vmin;">Iniciar Juego</a></li>
-                        <li style="margin: 10px;"><a href="#" id="options-btn" style="color: white; text-decoration: none; font-size: 3.5vmin;">Opciones</a></li>
-                        <li style="margin: 10px;"><a href="#" id="instructions-btn" style="color: white; text-decoration: none; font-size: 3.5vmin;">Instrucciones</a></li>
-                        <li style="margin: 10px;"><a href="#" id="score-btn" style="color: white; text-decoration: none; font-size: 3.5vmin;">Score</a></li>
+                <nav class="menu-box">
+                    <ul class="menu-list">
+                        <li><a href="#" id="start-btn" class="menu-link">Iniciar Juego</a></li>
+                        <li><a href="#" id="options-btn" class="menu-link">Opciones</a></li>
+                        <li><a href="#" id="instructions-btn" class="menu-link">Instrucciones</a></li>
+                        <li><a href="#" id="score-btn" class="menu-link">Score</a></li>
                     </ul>
                 </nav>
             </div>
-            <nav id="options-menu" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; background: rgba(0, 0, 0, 0.9); padding: 3vmin; border-radius: 10px; text-align: center; min-width: 30vmin;">
-                <h2 style="color: white; margin-top: 0; font-size: 4vmin;">Dificultad</h2>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 10px;"><a href="#" id="diff-easy" style="color: white; text-decoration: none; font-size: 3.5vmin;">Fácil</a></li>
-                    <li style="margin: 10px;"><a href="#" id="diff-normal" style="color: #00d4ff; text-decoration: none; font-size: 3.5vmin;">Normal</a></li>
-                    <li style="margin: 10px;"><a href="#" id="diff-hard" style="color: white; text-decoration: none; font-size: 3.5vmin;">Difícil</a></li>
+            <nav id="options-menu" class="menu-box" style="display: none;">
+                <h2 class="title-md">Dificultad</h2>
+                <ul class="menu-list">
+                    <li><a href="#" id="diff-easy" class="menu-link">Fácil</a></li>
+                    <li><a href="#" id="diff-normal" class="menu-link" style="color: #00d4ff;">Normal</a></li>
+                    <li><a href="#" id="diff-hard" class="menu-link">Difícil</a></li>
                     <li style="margin: 10px; color: white; font-size: 3.5vmin;">Música: <a href="#" id="btn-music" style="color: #00d4ff; text-decoration: none;">ON</a></li>
                     <li style="margin: 10px; color: white; font-size: 3.5vmin;">Sonidos: <a href="#" id="btn-sound" style="color: #00d4ff; text-decoration: none;">ON</a></li>
-                    <li style="margin: 20px 10px 10px;"><a href="#" id="options-back" style="color: #ff4d4d; text-decoration: none; font-size: 3.5vmin;">Volver</a></li>
+                    <li style="margin: 20px 10px 10px;"><a href="#" id="options-back" class="menu-link" style="color: #ff4d4d;">Volver</a></li>
                 </ul>
             </nav>
-            <div id="game-over-screen" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; background: rgba(0, 0, 0, 0.9); padding: 3vmin; border-radius: 10px; text-align: center; min-width: 40vmin; color: white;">
-                <h1 style="color: #ff4d4d; margin-top: 0; font-size: 6vmin;">GAME OVER</h1>
+            <div id="game-over-screen" class="menu-box" style="display: none;">
+                <h1 class="title-lg" style="color: #ff4d4d;">GAME OVER</h1>
                 <p style="font-size: 4vmin;">Puntos: <span id="final-score">0</span></p>
                 <div id="high-score-input" style="display: none;">
                     <p style="color: #00d4ff;">¡Nuevo Récord!</p>
-                    <input type="text" id="player-name" placeholder="Tu Nombre" maxlength="10" style="padding: 5px; font-size: 3vmin; text-align: center; width: 25vmin; border-radius: 5px; border: none;">
-                    <button id="save-score-btn" style="margin-top: 10px; padding: 5px 10px; font-size: 3vmin; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px;">Guardar</button>
+                    <input type="text" id="player-name" placeholder="Tu Nombre" maxlength="10" style="padding: 5px; font-size: 3vmin; text-align: center; width: 25vmin; border-radius: 5px; border: none; margin-bottom: 10px;">
+                    <button id="save-score-btn" class="btn btn-success">Guardar</button>
                 </div>
                 <div style="margin-top: 20px;">
-                    <button id="restart-btn" style="padding: 10px 20px; font-size: 3.5vmin; cursor: pointer; background: #00d4ff; border: none; color: black; border-radius: 5px;">Reiniciar</button>
-                    <button id="menu-btn" style="padding: 10px 20px; font-size: 3.5vmin; cursor: pointer; background: #ff4d4d; border: none; color: white; border-radius: 5px; margin-left: 10px;">Menú</button>
+                    <button id="restart-btn" class="btn btn-primary">Reiniciar</button>
+                    <button id="menu-btn" class="btn btn-danger">Menú</button>
                 </div>
             </div>
-            <div id="high-scores-screen" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; background: rgba(0, 0, 0, 0.9); padding: 3vmin; border-radius: 10px; text-align: center; min-width: 40vmin; color: white;">
-                <h2 style="color: #00d4ff; margin-top: 0; font-size: 4vmin;">Mejores Puntuaciones</h2>
+            <div id="high-scores-screen" class="menu-box" style="display: none;">
+                <h2 class="title-md" style="color: #00d4ff;">Mejores Puntuaciones</h2>
                 <ol id="high-scores-list" style="text-align: left; padding-left: 20px; font-size: 3.5vmin; margin: 0 auto; display: inline-block;"></ol>
-                <div style="margin-top: 20px;"><button id="close-scores-btn" style="padding: 5px 15px; font-size: 3vmin; cursor: pointer; background: #ff4d4d; color: white; border: none; border-radius: 5px;">Cerrar</button></div>
+                <div style="margin-top: 20px;"><button id="close-scores-btn" class="btn btn-danger">Cerrar</button></div>
             </div>
-            <div id="pause-menu" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; background: rgba(0, 0, 0, 0.9); padding: 3vmin; border-radius: 10px; text-align: center; min-width: 40vmin; color: white;">
-                <h1 style="color: white; margin-top: 0; font-size: 6vmin;">PAUSA</h1>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 10px;"><button id="resume-btn" style="padding: 10px 20px; font-size: 3.5vmin; cursor: pointer; background: #00d4ff; border: none; color: black; border-radius: 5px; width: 100%;">Reanudar</button></li>
-                    <li style="margin: 10px;"><button id="pause-restart-btn" style="padding: 10px 20px; font-size: 3.5vmin; cursor: pointer; background: #ff4d4d; border: none; color: white; border-radius: 5px; width: 100%;">Reiniciar</button></li>
-                    <li style="margin: 10px;"><button id="pause-menu-btn" style="padding: 10px 20px; font-size: 3.5vmin; cursor: pointer; background: white; border: none; color: black; border-radius: 5px; width: 100%;">Menú Principal</button></li>
+            <div id="pause-menu" class="menu-box" style="display: none;">
+                <h1 class="title-lg">PAUSA</h1>
+                <ul class="menu-list">
+                    <li><button id="resume-btn" class="btn btn-primary btn-full">Reanudar</button></li>
+                    <li><button id="pause-restart-btn" class="btn btn-danger btn-full">Reiniciar</button></li>
+                    <li><button id="pause-menu-btn" class="btn btn-full" style="background: white; color: black;">Menú Principal</button></li>
                 </ul>
             </div>
-            <div id="instructions-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: rgba(0, 0, 0, 0.95); color: white; flex-direction: column; justify-content: center; align-items: center;">
-                <h1 style="color: #00d4ff; font-size: 6vmin; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px #00d4ff;">Instrucciones</h1>
+            <div id="instructions-screen" class="screen-overlay">
+                <h1 class="title-lg" style="color: #00d4ff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px #00d4ff;">Instrucciones</h1>
                 <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; border: 1px solid rgba(0, 212, 255, 0.3); max-width: 80%;">
                     <ul style="list-style: none; padding: 0; font-size: 3.5vmin; line-height: 2.2; text-align: left; margin: 0;">
                         <li style="color: #00d4ff; font-weight: bold;">💻 PC:</li>
@@ -96,8 +96,8 @@
                 </div>
                 <button id="instructions-back-btn" style="margin-top: 40px; padding: 15px 40px; font-size: 3.5vmin; cursor: pointer; background: #ff4d4d; border: none; color: white; border-radius: 50px; font-weight: bold; box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); transition: transform 0.2s;">ENTENDIDO</button>
             </div>
-            <div id="ship-selection-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: rgba(0, 0, 0, 0.9); color: white; flex-direction: column; justify-content: center; align-items: center;">
-                <h1 style="color: #00d4ff; font-size: 6vmin; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px;">Selecciona tu Nave</h1>
+            <div id="ship-selection-screen" class="screen-overlay">
+                <h1 class="title-lg" style="color: #00d4ff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px;">Selecciona tu Nave</h1>
                 <div style="display: flex; gap: 50px; flex-wrap: wrap; justify-content: center;">
                     <div id="ship-1-btn" style="cursor: pointer; text-align: center; transition: transform 0.2s;">
                         <img src="img/player/player-1.png" style="width: 15vmin; height: 15vmin; object-fit: contain; border: 2px solid #00d4ff; border-radius: 10px; padding: 10px; background: rgba(0, 212, 255, 0.1);">

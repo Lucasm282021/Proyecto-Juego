@@ -23,3 +23,30 @@ canvas {
     height: 100%;
     touch-action: none;
 }
+
+/* Estilos de navegación y botones */
+nav a, #ship-selection-back {
+    transition: all 0.2s;
+}
+
+nav a:hover, #ship-selection-back:hover {
+    color: #00d4ff !important;
+    text-shadow: 0 0 10px #00d4ff;
+    transform: scale(1.1);
+    display: inline-block;
+}
+
+/* Efectos de selección de nave */
+#ship-1-btn:hover, #ship-2-btn:hover {
+    transform: scale(1.1);
+}
+
+#ship-1-btn:hover img {
+    box-shadow: 0 0 20px #00d4ff;
+    background: rgba(0, 212, 255, 0.3) !important;
+}
+
+#ship-2-btn:hover img {
+    box-shadow: 0 0 20px #ff4d4d;
+    background: rgba(255, 77, 77, 0.3) !important;
+}

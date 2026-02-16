@@ -1,6 +1,5 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const scoreElement = document.getElementById("score");
 const mainMenu = document.getElementById("main-menu");
 const startBtn = document.getElementById("start-btn");
 const optionsBtn = document.getElementById("options-btn");
@@ -26,10 +25,17 @@ const closeScoresBtn = document.getElementById("close-scores-btn");
 const instructionsBtn = document.getElementById("instructions-btn");
 const instructionsScreen = document.getElementById("instructions-screen");
 const instructionsBackBtn = document.getElementById("instructions-back-btn");
+const shipSelectionScreen = document.getElementById("ship-selection-screen");
+const ship1Btn = document.getElementById("ship-1-btn");
+const ship2Btn = document.getElementById("ship-2-btn");
+const shipSelectionBack = document.getElementById("ship-selection-back");
+const pauseMenu = document.getElementById("pause-menu");
+const resumeBtn = document.getElementById("resume-btn");
+const pauseRestartBtn = document.getElementById("pause-restart-btn");
+const pauseMenuBtn = document.getElementById("pause-menu-btn");
 
 const playerImg = new Image();
-playerImg.src = "img/nave.png";
-
+playerImg.src = "img/player/player-1.png";
 const enemyImg = new Image();
 enemyImg.src = "img/enemigo.png";
 
@@ -58,7 +64,10 @@ const menuBgImg = new Image();
 menuBgImg.src = "img/fondo-menu.png";
 menuBgImg.onload = () => {
     if (!gameRunning) {
-        ctx.drawImage(menuBgImg, 0, 0, canvas.width, canvas.height);
+        const scale = Math.max(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
+        const x = (canvas.width / 2) - (menuBgImg.width / 2) * scale;
+        const y = (canvas.height / 2) - (menuBgImg.height / 2) * scale;
+        ctx.drawImage(menuBgImg, x, y, menuBgImg.width * scale, menuBgImg.height * scale);
     }
 };
 
@@ -70,17 +79,32 @@ bgMusic.loop = true;
 const menuMusic = new Audio("sound/intro.mp3");
 menuMusic.loop = true;
 
+let gameScale = 1;
+
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    gameScale = Math.min(canvas.width / 600, canvas.height / 800);
+
+    try {
+        if (typeof player !== "undefined") {
+            player.w = 80 * gameScale;
+            player.h = 80 * gameScale;
+            player.y = canvas.height - 100 * gameScale;
+            if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+        }
+    } catch (e) {
+        // Player no inicializado aún, ignorar error en la primera carga
+    }
 }
 window.addEventListener("resize", () => {
     resize();
-    if (typeof player !== "undefined") {
-        player.y = canvas.height - 100;
-        if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+    if (!gameRunning && menuBgImg.complete) {
+        const scale = Math.max(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
+        const x = (canvas.width / 2) - (menuBgImg.width / 2) * scale;
+        const y = (canvas.height / 2) - (menuBgImg.height / 2) * scale;
+        ctx.drawImage(menuBgImg, x, y, menuBgImg.width * scale, menuBgImg.height * scale);
     }
-    if (!gameRunning && menuBgImg.complete) ctx.drawImage(menuBgImg, 0, 0, canvas.width, canvas.height);
 });
 resize();
 
@@ -106,9 +130,51 @@ let currentDifficulty = 'normal';
 const keys = {};
 window.addEventListener("keydown", e => {
     keys[e.code] = true;
-    if ((e.code === "KeyP" || e.code === "Escape") && gameRunning) isPaused = !isPaused;
+    if ((e.code === "KeyP" || e.code === "Escape") && gameRunning) {
+        togglePause();
+    }
 });
 window.addEventListener("keyup", e => keys[e.code] = false);
+
+function togglePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseMenu.style.display = "block";
+        if (musicOn) bgMusic.pause();
+    } else {
+        pauseMenu.style.display = "none";
+        if (musicOn) bgMusic.play();
+    }
+}
+
+resumeBtn.addEventListener("click", () => {
+    togglePause();
+});
+
+pauseRestartBtn.addEventListener("click", () => {
+    // Reinicio suave del juego
+    isPaused = false;
+    pauseMenu.style.display = "none";
+    score = 0;
+    level = 1;
+    enemies.length = 0;
+    bullets.length = 0;
+    enemyBullets.length = 0;
+    explosions.length = 0;
+    playerDestroyed = false;
+    player.x = canvas.width / 2 - 40 * gameScale;
+    player.y = canvas.height - 100 * gameScale;
+    
+    startEnemySpawners();
+    if (musicOn) {
+        bgMusic.currentTime = 0;
+        bgMusic.play();
+    }
+});
+
+pauseMenuBtn.addEventListener("click", () => {
+    location.reload();
+});
 
 // Control con Mouse
 canvas.addEventListener("mousemove", e => {
@@ -128,7 +194,7 @@ canvas.addEventListener("mousemove", e => {
 canvas.addEventListener("mousedown", e => {
     if (!gameRunning || isPaused || countdownText !== "") return;
     e.preventDefault();
-    bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 15 });
+    bullets.push({ x: player.x + player.w / 2 - 2 * gameScale, y: player.y, w: 4 * gameScale, h: 15 * gameScale });
     if (soundOn) {
         shootSound.currentTime = 0;
         shootSound.play();
@@ -137,11 +203,11 @@ canvas.addEventListener("mousedown", e => {
 
 // Jugador
 const player = {
-    x: canvas.width / 2 - 40,
-    y: canvas.height - 100,
-    w: 80,
-    h: 80,
-    speed: 5,
+    x: canvas.width / 2 - 40 * gameScale,
+    y: canvas.height - 100 * gameScale,
+    w: 80 * gameScale,
+    h: 80 * gameScale,
+    speed: 5 * gameScale,
     color: "#00d4ff"
 };
 
@@ -167,7 +233,7 @@ function startEnemySpawners() {
             let spawnImg = enemyImg;
             let spawnHp = 1;
             let spawnScore = 10;
-            let spawnSpeed = (2 + Math.random() * 3) * enemySpeedMultiplier;
+            let spawnSpeed = (2 + Math.random() * 3) * enemySpeedMultiplier * gameScale;
             let spawnType = 'normal';
 
             if (rand < 0.5) {
@@ -192,8 +258,8 @@ function startEnemySpawners() {
             enemies.push({
                 x: Math.random() * (canvas.width - 60),
                 y: -60,
-                w: 60,
-                h: 60,
+                w: 60 * gameScale,
+                h: 60 * gameScale,
                 speed: spawnSpeed,
                 color: "#ff4d4d",
                 type: spawnType,
@@ -210,9 +276,9 @@ function startEnemySpawners() {
             enemies.push({
                 x: Math.random() * (canvas.width - 60),
                 y: -60,
-                w: 60,
-                h: 60,
-                speed: 3 * enemySpeedMultiplier,
+                w: 60 * gameScale,
+                h: 60 * gameScale,
+                speed: 3 * enemySpeedMultiplier * gameScale,
                 type: 'shooter',
                 img: enemy2Img,
                 hp: 1,
@@ -227,10 +293,10 @@ function update() {
 
     // Calcular hitbox del jugador una sola vez por frame
     const playerHitbox = {
-        x: player.x + 20,
-        y: player.y + 10,
-        w: player.w - 40,
-        h: player.h - 20
+        x: player.x + 20 * gameScale,
+        y: player.y + 10 * gameScale,
+        w: player.w - 40 * gameScale,
+        h: player.h - 20 * gameScale
     };
 
     // Actualizar explosiones
@@ -241,7 +307,7 @@ function update() {
 
     // Mover balas
     for (let i = bullets.length - 1; i >= 0; i--) {
-        bullets[i].y -= 7;
+        bullets[i].y -= 7 * gameScale;
         if (bullets[i].y < 0) bullets.splice(i, 1);
     }
 
@@ -304,8 +370,8 @@ function update() {
         // Lógica de disparo para enemigo tipo 'shooter'
         if (level >= 5 && en.type === 'shooter' && !en.hasShot && Math.random() < 0.02) {
             enemyBullets.push({
-                x: en.x + en.w / 2 - 5, y: en.y + en.h, w: 10, h: 20,
-                speed: 5 * enemySpeedMultiplier
+                x: en.x + en.w / 2 - 5 * gameScale, y: en.y + en.h, w: 10 * gameScale, h: 20 * gameScale,
+                speed: 5 * enemySpeedMultiplier * gameScale
             });
             en.hasShot = true;
         }
@@ -329,7 +395,6 @@ function update() {
                     });
                     enemies.splice(i, 1);
                     score += (en.scoreValue || 10);
-                    scoreElement.innerText = score;
                     if (soundOn) {
                         explosionSound.currentTime = 0;
                         explosionSound.play();
@@ -354,11 +419,16 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Dibujar fondo
-    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+    if (bgImg.complete && bgImg.width > 0) {
+        const scale = Math.max(canvas.width / bgImg.width, canvas.height / bgImg.height);
+        const x = (canvas.width / 2) - (bgImg.width / 2) * scale;
+        const y = (canvas.height / 2) - (bgImg.height / 2) * scale;
+        ctx.drawImage(bgImg, x, y, bgImg.width * scale, bgImg.height * scale);
+    }
 
     // Dibujar puntaje
     ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
+    ctx.font = `${20 * gameScale}px Arial`;
     ctx.fillText("Puntos: " + score, 10, 30);
     ctx.fillText("Nivel: " + level, canvas.width - 120, 30);
 
@@ -393,16 +463,10 @@ function draw() {
 
     if (countdownText !== "") {
         ctx.fillStyle = "white";
-        ctx.font = "80px Arial";
+        ctx.font = `${80 * gameScale}px Arial`;
         ctx.textAlign = "center";
         ctx.fillText(countdownText, canvas.width / 2, canvas.height / 2);
         ctx.textAlign = "start";
-    }
-
-    if (isPaused) {
-        ctx.fillStyle = "white";
-        ctx.font = "40px Arial";
-        ctx.fillText("PAUSA", canvas.width / 2 - 60, canvas.height / 2);
     }
 }
 
@@ -492,6 +556,17 @@ menuMusicToggle.addEventListener("click", (e) => {
 startBtn.addEventListener("click", (e) => {
     e.preventDefault();
     mainMenu.style.display = "none";
+    shipSelectionScreen.style.display = "flex";
+});
+
+shipSelectionBack.addEventListener("click", (e) => {
+    e.preventDefault();
+    shipSelectionScreen.style.display = "none";
+    mainMenu.style.display = "block";
+});
+
+function launchGame() {
+    shipSelectionScreen.style.display = "none";
     gameRunning = true;
     playerDestroyed = false;
     menuMusic.pause();
@@ -530,6 +605,16 @@ startBtn.addEventListener("click", (e) => {
     }, 1000);
 
     gameLoop();
+}
+
+ship1Btn.addEventListener("click", () => {
+    playerImg.src = "img/player/player-1.png";
+    launchGame();
+});
+
+ship2Btn.addEventListener("click", () => {
+    playerImg.src = "img/player/player-2.png";
+    launchGame();
 });
 
 // Iniciar música del menú

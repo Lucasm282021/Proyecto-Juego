@@ -12,6 +12,9 @@ const btnMusic = document.getElementById("btn-music");
 const btnSound = document.getElementById("btn-sound");
 const menuMusicToggle = document.getElementById("menu-music-toggle");
 const scoreBtn = document.getElementById("score-btn");
+const creditsBtn = document.getElementById("credits-btn");
+const creditsScreen = document.getElementById("credits-screen");
+const creditsBackBtn = document.getElementById("credits-back-btn");
 const gameOverScreen = document.getElementById("game-over-screen");
 const finalScoreSpan = document.getElementById("final-score");
 const highScoreInput = document.getElementById("high-score-input");
@@ -33,6 +36,8 @@ const pauseMenu = document.getElementById("pause-menu");
 const resumeBtn = document.getElementById("resume-btn");
 const pauseRestartBtn = document.getElementById("pause-restart-btn");
 const pauseMenuBtn = document.getElementById("pause-menu-btn");
+const sfxVolumeControl = document.getElementById("sfx-volume-control");
+const sfxVolValue = document.getElementById("sfx-vol-value");
 
 const playerImg = new Image();
 playerImg.src = "img/player/player-1.png";
@@ -64,7 +69,9 @@ const menuBgImg = new Image();
 menuBgImg.src = "img/fondo-menu.png";
 menuBgImg.onload = () => {
     if (!gameRunning) {
-        const scale = Math.max(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.min(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
         const x = (canvas.width / 2) - (menuBgImg.width / 2) * scale;
         const y = (canvas.height / 2) - (menuBgImg.height / 2) * scale;
         ctx.drawImage(menuBgImg, x, y, menuBgImg.width * scale, menuBgImg.height * scale);
@@ -100,7 +107,9 @@ function resize() {
 window.addEventListener("resize", () => {
     resize();
     if (!gameRunning && menuBgImg.complete) {
-        const scale = Math.max(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.min(canvas.width / menuBgImg.width, canvas.height / menuBgImg.height);
         const x = (canvas.width / 2) - (menuBgImg.width / 2) * scale;
         const y = (canvas.height / 2) - (menuBgImg.height / 2) * scale;
         ctx.drawImage(menuBgImg, x, y, menuBgImg.width * scale, menuBgImg.height * scale);
@@ -186,6 +195,14 @@ pauseRestartBtn.addEventListener("click", () => {
 
 pauseMenuBtn.addEventListener("click", () => {
     location.reload();
+});
+
+sfxVolumeControl.addEventListener("input", (e) => {
+    const vol = parseFloat(e.target.value);
+    shootSound.volume = vol;
+    explosionSound.volume = vol;
+    gameOverSound.volume = vol;
+    sfxVolValue.innerText = Math.round(vol * 100) + "%";
 });
 
 // Control con Mouse
@@ -713,5 +730,16 @@ instructionsBtn.addEventListener("click", (e) => {
 instructionsBackBtn.addEventListener("click", (e) => {
     e.preventDefault();
     instructionsScreen.style.display = "none";
+    mainMenu.style.display = "block";
+});
+
+creditsBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    mainMenu.style.display = "none";
+    creditsScreen.style.display = "block";
+});
+
+creditsBackBtn.addEventListener("click", () => {
+    creditsScreen.style.display = "none";
     mainMenu.style.display = "block";
 });

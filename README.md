@@ -64,7 +64,7 @@ Este proyecto es una aplicación web estática, por lo que no requiere instalaci
 
 Desarrollado como parte del portafolio de proyectos 2026.
 
-*   **Lógica y Código:** [Tu Nombre / Desarrollador]
+*   **Lógica y Código:** [Montero Lucas Damian / Desarrollador]
 *   **Assets:** Imágenes y sonidos integrados en la carpeta de recursos.
 
 ---
